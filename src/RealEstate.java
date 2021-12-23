@@ -8,8 +8,18 @@ public class RealEstate {
 
     public RealEstate(){
         this.userArray=new User[0];
-        this.addresses=new Address[0];
         this.properties=new Property[0];
+        this.addresses= new Address[10];
+        this.addresses[1]=new Address("tel-aviv","herzel");
+        this.addresses[2]=new Address("ashqelon","herzel");
+        this.addresses[3]=new Address("jerusalem","rehavia");
+        this.addresses[4]=new Address("tel-aviv","herzel");
+        this.addresses[5]=new Address("ashqelon","herzel");
+        this.addresses[6]=new Address("jerusalem","jaffo");
+        this.addresses[7]=new Address("tel-aviv","jaffo");
+        this.addresses[8]=new Address("ashqelon","herzel");
+        this.addresses[9]=new Address("jerusalem","kiryat yovel");
+        this.addresses[10]=new Address("tel-aviv","shenkin");
     }
     @Override
     public String toString() {
@@ -18,6 +28,37 @@ public class RealEstate {
                 ", properties=" + Arrays.toString(properties) +
                 ", addresses=" + Arrays.toString(addresses) +
                 '}';
+    }
+    public void firstMenu(){
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("hello \n1.create user \n2.login \n3.exit");
+        System.out.print("enter your choice:");
+        int choice=scanner.nextInt();
+        if (choice==1){
+            createUser();
+            firstMenu();
+        }
+        else if (choice==2){
+            User user=login();
+            if ( user != null){
+                secondMenu(user);
+            }
+            else {
+                firstMenu();
+            }
+
+        }
+        else {
+            System.out.println("goodbye");
+        }
+
+    }
+    public void secondMenu(User user){
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("1.post new property \n2.remove exist property \n3.show all properties \n4.show my properties \n5.search property \n6.logout and back first menu");
+        System.out.print("enter your choice:");
+        int choice=scanner.nextInt();
+
     }
     public boolean isUsernameExist (String usernameToCheck) {
         boolean exists = false;
@@ -51,7 +92,7 @@ public class RealEstate {
         }
         return passwordCorrect;
     }
-    public void addUserToArray (String username, String password,String phone,int type) {
+    public void addUserToArray (String username, String password, String phone, String type) {
         User[] newArray = new User[this.userArray.length + 1];
         for (int i = 0; i < this.userArray.length; i++) {
             newArray[i] = this.userArray[i];
@@ -60,7 +101,7 @@ public class RealEstate {
         newArray[this.userArray.length] = userToAdd;
         this.userArray = newArray;
     }
-    private boolean isStrongPassword (String passwordToCheck) {
+    public boolean isStrongPassword (String passwordToCheck) {
         boolean strong = false;
         boolean hasDigit = false;
         boolean hasSpecialChar  =false;
@@ -84,20 +125,21 @@ public class RealEstate {
         if (phone.length() < 10 || phone.length() > 10) {
             proper = false;
         } else {
-            int i = 0;
-            while (i <= phone.length()) {
-                if (phone.charAt(0) == '0' && phone.charAt(1) == '5') {
-                    i += 2;
-                    proper = true;
-                } else if (Character.isDigit(phone.charAt(i))) {
-                    proper = true;
-                    i++;
+            if (phone.charAt(0) == '0' && phone.charAt(1) == '5') {
+                proper = true;
+                for (int i=2;i<phone.length();i++) {
+                    char current=phone.charAt(i);
+                    if (Character.isDigit(current)) {
+                        proper = true;
+                    } else {
+                        proper = false;
+                        break;
+                    }
+                }
                 } else {
                     proper = false;
-                    break;
                 }
             }
-        }
         return proper;
     }
     public void createUser()
@@ -106,11 +148,13 @@ public class RealEstate {
         String username = null;
         String password = null;
         String phone = null;
-        int type=0;
+        String type=null;
+        String s1="regular";
+        String s2="mediator";
         do {
             System.out.println("Enter username: ");
             username = scanner.next();
-        } while (!isUsernameExist(username));
+        } while (isUsernameExist(username));
 
         do {
             System.out.println("Enter password: ");
@@ -123,10 +167,10 @@ public class RealEstate {
         } while (!isPhoneNumberGood(phone));
 
         do {
-            System.out.println("Enter your type(regular =1,mediator=2): ");
-            type = scanner.nextInt();
-        } while (type !=1 || type !=2);
-        addUserToArray(username, password ,phone ,type);
+            System.out.println("Enter your type(regular,mediator): ");
+            type = scanner.next();
+        } while (!type.equals(s1)  && type.equals(s2));
+        addUserToArray(username, password ,phone , type);
     }
     public User login(){
         Scanner scanner = new Scanner(System.in);
@@ -145,9 +189,48 @@ public class RealEstate {
         }
         if (details){
             user=userArray[indexOfTheUsername(username)];
+        }else {
+            System.out.println("there isn't user like this...");
         }
         return user;
     }
+    public boolean postNewProperty(User user){
+        boolean canPostProperty=false;
+        int amount=amountOfProperty(user);
+        if (user.getType().equals("regular")){
+            if (amount<3){
+
+
+            }
+        }
+return canPostProperty;
+    }
+    public int amountOfProperty(User user){
+        int counter=0;
+        for (int i=0;i<properties.length;i++){
+            if (user.getUsername().equals(properties[i].getUser())){
+                counter++;
+            }
+        }
+        return counter;
+    }
+    public void showOptionalCities(){
+        Address[] address=new Address[10];
+        for (int i=0;i<addresses.length;i++)
+        {
+            for (int j = i+1; j < addresses.length; j++) {
+                if ((addresses[i].equals(addresses[j])) && (i != j)) {
+                    for ()
+
+                }
+            }
+        }
+
+
+
+
+    }
+
 }
 
 

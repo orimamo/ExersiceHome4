@@ -9,6 +9,10 @@ public class Address {
                 ", street='" + street + '\'' +
                 '}';
     }
+    public Address(String country,String street){
+        this.country = country;
+        this.street = street;
+    }
 
     public String getCountry() {
         return country;

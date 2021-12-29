@@ -460,7 +460,6 @@ public class RealEstate {
             System.out.println((k+1) + "."  + properties1[k]);
         }
     }
-
 }
 
 

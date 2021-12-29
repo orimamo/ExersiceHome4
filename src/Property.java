@@ -8,7 +8,21 @@ public class Property {
         private int floor;
         private User user;
 
-    @Override
+
+
+    public Property(Address address,String type,int floor,double rooms,int numberOfHouse,String state,int price,User user ){
+        this.address=address;
+        this.type=type;
+        this.floor=floor;
+        this.rooms=rooms;
+        this.numberOfHouse=numberOfHouse;
+        this.state=state;
+        this.price=price;
+        this.user=user;
+    }
+
+
+
     public String toString() {
         return "Property{" +
                 "address=" + address +

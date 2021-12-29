@@ -4,29 +4,30 @@ import java.util.Scanner;
 public class RealEstate {
     private User[] userArray;
     private Property[] properties;
-    private Address[] addresses;
+    private Address[] addresses1;
 
     public RealEstate(){
-        this.userArray=new User[0];
-        this.properties=new Property[0];
-        this.addresses= new Address[10];
-        this.addresses[1]=new Address("tel-aviv","herzel");
-        this.addresses[2]=new Address("ashqelon","herzel");
-        this.addresses[3]=new Address("jerusalem","rehavia");
-        this.addresses[4]=new Address("tel-aviv","herzel");
-        this.addresses[5]=new Address("ashqelon","herzel");
-        this.addresses[6]=new Address("jerusalem","jaffo");
-        this.addresses[7]=new Address("tel-aviv","jaffo");
-        this.addresses[8]=new Address("ashqelon","herzel");
-        this.addresses[9]=new Address("jerusalem","kiryat yovel");
-        this.addresses[10]=new Address("tel-aviv","shenkin");
+        userArray=new User[0];
+        properties=new Property[0];
+        addresses1 = new Address[10];
+        addresses1[0]=new Address("tel-aviv","herzel");
+        addresses1[1]=new Address("jerusalem","rehavia");
+        addresses1[2]=new Address("ashkelon","barnea");
+        addresses1[3]=new Address("tel-aviv","rotshild");
+        addresses1[4]=new Address("ashkelon","neot");
+        addresses1[5]=new Address("jerusalem","jaffo");
+        addresses1[6]=new Address("tel-aviv","King-gorge");
+        addresses1[7]=new Address("ashkelon","Afridar");
+        addresses1[8]=new Address("jerusalem","kiryat-yovel");
+        addresses1[9]=new Address("tel-aviv","shenkin");
+
     }
     @Override
     public String toString() {
         return "RealEstate{" +
                 "userArray=" + Arrays.toString(userArray) +
                 ", properties=" + Arrays.toString(properties) +
-                ", addresses=" + Arrays.toString(addresses) +
+                ", addresses=" + Arrays.toString(addresses1) +
                 '}';
     }
     public void firstMenu(){
@@ -58,6 +59,31 @@ public class RealEstate {
         System.out.println("1.post new property \n2.remove exist property \n3.show all properties \n4.show my properties \n5.search property \n6.logout and back first menu");
         System.out.print("enter your choice:");
         int choice=scanner.nextInt();
+        switch (choice){
+            case 1: {
+                boolean result=postNewProperty(user);
+                System.out.println(result);
+                secondMenu(user);
+            }
+            case 2:{
+                removeProperty(user);
+                secondMenu(user);
+            }
+            case 3: {
+                printAllProperties();
+                secondMenu(user);
+            }
+            case 4: {
+                printAllProperties(user);
+                secondMenu(user);
+            }
+            case 5:{
+
+            }
+            case 6:{
+                firstMenu();
+            }
+        }
 
     }
     public boolean isUsernameExist (String usernameToCheck) {
@@ -169,7 +195,7 @@ public class RealEstate {
         do {
             System.out.println("Enter your type(regular,mediator): ");
             type = scanner.next();
-        } while (!type.equals(s1)  && type.equals(s2));
+        } while (!type.equals(s1)  && !type.equals(s2));
         addUserToArray(username, password ,phone , type);
     }
     public User login(){
@@ -195,15 +221,23 @@ public class RealEstate {
         return user;
     }
     public boolean postNewProperty(User user){
-        boolean canPostProperty=false;
+        boolean postProperty=false;
         int amount=amountOfProperty(user);
         if (user.getType().equals("regular")){
             if (amount<3){
-
-
+                postProperty=createProperty(user);
+            }
+            else {
+                postProperty=false;
             }
         }
-return canPostProperty;
+        else if(user.getType().equals("mediator"))
+        {
+            if (amount<10) {
+                postProperty = createProperty(user);
+            }
+        }
+        return postProperty;
     }
     public int amountOfProperty(User user){
         int counter=0;
@@ -214,21 +248,217 @@ return canPostProperty;
         }
         return counter;
     }
-    public void showOptionalCities(){
-        Address[] address=new Address[10];
-        for (int i=0;i<addresses.length;i++)
-        {
-            for (int j = i+1; j < addresses.length; j++) {
-                if ((addresses[i].equals(addresses[j])) && (i != j)) {
-                    for ()
+    public boolean createProperty(User user) {
+        Scanner scanner = new Scanner(System.in);
+        boolean postProperty=false;
+        String street ="";
+        int type=0;
+        String type1="";
+        int floor=-1;
+        double rooms=0;
+        int numOfHouse=0;
+        int price=0;
+        String state="";
+        showOptionalCities();
+        System.out.println("\nenter the chosen city:");
+        String city = scanner.next();
+        if (isExistCity(city)) {
+            postProperty = true;
+            int num = numOfStreets(city);
+            showStreets(city);
+            System.out.println("\nenter the chosen street:");
+            street = scanner.next();
+            if (isExistStreet(street, city)) {
+                postProperty = true;
+                System.out.println("\nenter the type of the property (1)regular apartment \n2)penthouse \n3)private house");
+                type = scanner.nextInt();
+                if (type == 1) {
+                    System.out.println("in which floor that apartment is?");
+                    floor = scanner.nextInt();
+                }
+                System.out.println("how much rooms?");
+                rooms = scanner.nextDouble();
+                System.out.println("what the number of the property?");
+                numOfHouse = scanner.nextInt();
+                System.out.println("what the state of the property?(rent or sell");
+                state = scanner.next();
+                System.out.println("what the price of the property?");
+                price = scanner.nextInt();
+            } else {
+                System.out.println("there isn't street like this");
+                postProperty = false;
+            }
+        }
+        else {
+            System.out.println("there isn't city like this");
+            postProperty = false;
+        }
+        Address address=new Address(city,street);
+        if (postProperty){
+            if (type==1){
+                type1="regular apartment";
+            }
+            else if(type==2){
+                type1="penthouse";
+            }
+            else if (type==3){
+                type1="private house";
+            }
+            Property property=new Property(address,type1,floor,rooms,numOfHouse,state,price,user);
+            addPropertyToArray(property);
+        }
 
+        return postProperty;
+    }
+    public void addPropertyToArray(Property property){
+        Property[] newArray = new Property[this.properties.length + 1];
+        for (int i = 0; i < this.properties.length; i++) {
+            newArray[i] = this.properties[i];
+        }
+        Property propertyToAdd = property;
+        newArray[this.properties.length] = propertyToAdd;
+        this.properties = newArray;
+    }
+
+    public void showOptionalCities(){
+        Address [] address = removeDuplicates();
+        for (int i=0;i<address.length;i++){
+            System.out.print(address[i].getCity() + ",");
+        }
+    }
+    public  Address[] removeDuplicates()
+    {
+        Address [] address = new Address[this.addresses1.length];
+        for (int a=0;a<this.addresses1.length;a++){
+            address[a]=this.addresses1[a];
+        }
+        int end = address.length;
+        int shiftLeft=0;
+        for (int i = 0; i < end; i++)
+        {
+            for (int j = i + 1; j < end; j++)
+            {
+                if (address[i].getCity() == address[j].getCity()) {
+                    shiftLeft = j;
+                    for (int k = j+1; k < end; k++, shiftLeft++) {
+                        address[shiftLeft] = address[k];
+                    }
+                    end--;
+                    j--;
                 }
             }
         }
 
+        Address[] whitelist = new Address[shiftLeft];
+        for(int i = 0; i < shiftLeft; i++){
+            whitelist[i] = address[i];
+        }
+        return whitelist;
+    }
+    public boolean isExistCity(String city){
+        boolean check=false;
+        for (int i = 0; i<this.addresses1.length; i++){
+            if (this.addresses1[i].getCity().equals(city)){
+                check=true;
+                break;
+            }
+        }
+        return check;
+    }
+    public void showStreets(String city){
+        for (int i = 0; i<this.addresses1.length; i++) {
+            if (this.addresses1[i].getCity().equals(city)) {
+                System.out.print(this.addresses1[i].getStreet() + ",");
+            }
+        }
+    }
+    public int numOfStreets(String city){
+       int counter=0;
+        for (int i = 0; i<this.addresses1.length; i++){
+            if (this.addresses1[i].getCity().equals(city)){
+                counter++;
+            }
+        }
+        return counter;
+    }
+    public Address[] streetsByCity(String city){
+        int amount=numOfStreets(city);
+        Address [] addresses=new Address[amount];
+        int j=0;
+        for (int i = 0; i<this.addresses1.length; i++) {
+            if (this.addresses1[i].getCity().equals(city)) {
+                addresses[j] = this.addresses1[i];
+                j++;
+            }
+        }
+        return addresses;
+    }
+    public boolean isExistStreet(String street,String city){
+        boolean check=false;
+        Address [] address = streetsByCity(city);
+        for (int i=0;i<address.length;i++){
+            if (address[i].getStreet().equals(street)){
+                check=true;
+                break;
+            }
+        }
+        return check;
+    }
+    public void removeProperty(User user){
+        Scanner scanner = new Scanner(System.in);
+        int amount =amountOfProperty(user);
+        int indexOfProperty=-1;
+        if(amount>0) {
+            Property[] property = allMyProperties(user);
+            Property[] newPropertiesArray=new Property[this.properties.length-1];
+            int propertyToRemove = scanner.nextInt();
+            for (int i=0;i<this.properties.length;i++){
+                if(this.properties[i].equals(property[propertyToRemove])){
+                    indexOfProperty=i;
+                    break;
+                }
+            }
+            int i=0,j=0;
+            while (i<this.properties.length){
+                if (i!=indexOfProperty) {
+                    newPropertiesArray[j] = this.properties[i];
+                    i++;
+                    j++;
+                }
+                else {
+                    i++;
+                }
+            }
+            this.properties=newPropertiesArray;
+            System.out.println("the post is removed...");
+        }
+        else {
+            System.out.println("you don't post any property\ngoodbey" );
+        }
+    }
+    public Property[] allMyProperties(User user){
+        int amount =amountOfProperty(user);
+        Property[] properties1=new Property[amount];
+        int j=0;
+        for (int i=0;i<this.properties.length;i++){
+            if(this.properties[i].getUser().equals(user.getUsername())){
+                properties1[j]=this.properties[i];
+                j++;
+            }
+        }
 
-
-
+        return properties1;
+    }
+    public void printAllProperties(){
+        for (int i=0;i<this.properties.length;i++){
+            System.out.println((i+1) +"." + this.properties[i]);
+        }
+    }
+    public void printAllProperties(User user){
+        Property[] properties1=allMyProperties(user);
+        for (int k=0;k<properties1.length;k++){
+            System.out.println((k+1) + "."  + properties1[k]);
+        }
     }
 
 }

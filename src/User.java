@@ -7,7 +7,7 @@ public class User {
     public String toString() {
         return "User:" +
                 "username='" + username + '\'' +
-                ", password='" + password + '\'' +
+        // ", password='" + password + '\'' +
                 ", phone='" + phone + '\'' +
                 ", type='" + type + '\'' ;
     }

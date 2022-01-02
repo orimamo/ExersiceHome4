@@ -5,11 +5,7 @@ public class User {
     private String type;
 
     public String toString() {
-        return "User:" +
-                "username='" + username + '\'' +
-        // ", password='" + password + '\'' +
-                ", phone='" + phone + '\'' +
-                ", type='" + type + '\'' ;
+        return username + " " +  phone + "(" + type + ")";
     }
 
     public User(String username, String password ,String phone,String type){

@@ -175,8 +175,8 @@ public class RealEstate {
         String password = null;
         String phone = null;
         String type=null;
-        String s1="regular";
-        String s2="mediator";
+        String s1="regular_user";
+        String s2="real_estate_broker";
         do {
             System.out.println("Enter username: ");
             username = scanner.next();
@@ -193,7 +193,7 @@ public class RealEstate {
         } while (!isPhoneNumberGood(phone));
 
         do {
-            System.out.println("Enter your type(regular,mediator): ");
+            System.out.println("Enter your type(regular_user,real_estate_broker): ");
             type = scanner.next();
         } while (!type.equals(s1)  && !type.equals(s2));
         addUserToArray(username, password ,phone , type);
@@ -223,7 +223,7 @@ public class RealEstate {
     public boolean postNewProperty(User user){
         boolean postProperty=false;
         int amount=amountOfProperty(user);
-        if (user.getType().equals("regular")){
+        if (user.getType().equals("regular_user")){
             if (amount<3){
                 postProperty=createProperty(user);
             }
@@ -231,7 +231,7 @@ public class RealEstate {
                 postProperty=false;
             }
         }
-        else if(user.getType().equals("mediator"))
+        else if(user.getType().equals("real_estate_broker"))
         {
             if (amount<10) {
                 postProperty = createProperty(user);
@@ -239,15 +239,7 @@ public class RealEstate {
         }
         return postProperty;
     }
-    public int amountOfProperty(User user){
-        int counter=0;
-        for (int i=0;i<properties.length;i++){
-            if (user.getUsername().equals(properties[i].getUser())){
-                counter++;
-            }
-        }
-        return counter;
-    }
+
     public boolean createProperty(User user) {
         Scanner scanner = new Scanner(System.in);
         boolean postProperty=false;
@@ -404,44 +396,58 @@ public class RealEstate {
         }
         return check;
     }
+    public int amountOfProperty(User user){
+        int counter=0;
+        for (int i=0;i<this.properties.length;i++){
+            if (properties[i].getUser().getUsername().equals(user.getUsername())){
+                counter++;
+            }
+        }
+        return counter;
+    }
     public void removeProperty(User user){
         Scanner scanner = new Scanner(System.in);
         int amount =amountOfProperty(user);
         int indexOfProperty=-1;
+        int propertyToRemove=0;
         if(amount>0) {
             Property[] property = allMyProperties(user);
-            Property[] newPropertiesArray=new Property[this.properties.length-1];
-            int propertyToRemove = scanner.nextInt();
-            for (int i=0;i<this.properties.length;i++){
-                if(this.properties[i].equals(property[propertyToRemove])){
-                    indexOfProperty=i;
+            printAllProperties(user);
+            System.out.println("choose which property do you want to remove:");
+            propertyToRemove = scanner.nextInt();
+            for (int i = 0; i < this.properties.length; i++) {
+                if (this.properties[i].equals(property[propertyToRemove-1])) {
+                    indexOfProperty = i;
                     break;
                 }
             }
-            int i=0,j=0;
-            while (i<this.properties.length){
-                if (i!=indexOfProperty) {
-                    newPropertiesArray[j] = this.properties[i];
-                    i++;
-                    j++;
-                }
-                else {
-                    i++;
-                }
+            if (this.properties.length==1) {
+                Property[] newPropertiesArray=new Property[this.properties.length-1];
+                this.properties[this.properties.length-1]=null;
+                this.properties=newPropertiesArray;
+                System.out.println("that property removed!");
             }
-            this.properties=newPropertiesArray;
-            System.out.println("the post is removed...");
+            else {
+                Property[] newPropertiesArray=new Property[this.properties.length-1];
+                this.properties[indexOfProperty] = this.properties[this.properties.length - 1];
+                this.properties[this.properties.length - 1] = null;
+                for (int i = 0; i < this.properties.length; i++) {
+                    newPropertiesArray[i] = this.properties[i];
+                }
+                this.properties = newPropertiesArray;
+                System.out.println("that property removed!");
+            }
         }
         else {
             System.out.println("you don't post any property\ngoodbey" );
         }
     }
     public Property[] allMyProperties(User user){
-        int amount =amountOfProperty(user);
+        int amount = amountOfProperty(user);
         Property[] properties1=new Property[amount];
         int j=0;
         for (int i=0;i<this.properties.length;i++){
-            if(this.properties[i].getUser().equals(user.getUsername())){
+            if(this.properties[i].getUser().getUsername().equals(user.getUsername())){
                 properties1[j]=this.properties[i];
                 j++;
             }
@@ -450,14 +456,24 @@ public class RealEstate {
         return properties1;
     }
     public void printAllProperties(){
-        for (int i=0;i<this.properties.length;i++){
-            System.out.println((i+1) +"." + this.properties[i]);
-        }
+            if (this.properties.length>=1) {
+                for (int i = 0; i < this.properties.length; i++) {
+                    System.out.println((i + 1) + "." + this.properties[i]);
+                }
+            }
+            else {
+                System.out.println("there isn't properties that post");
+            }
     }
     public void printAllProperties(User user){
         Property[] properties1=allMyProperties(user);
-        for (int k=0;k<properties1.length;k++){
-            System.out.println((k+1) + "."  + properties1[k]);
+        if (properties1.length==0){
+            System.out.println("you don't post any properties");
+        }
+        else {
+            for (int k = 0; k < properties1.length; k++) {
+                System.out.println((k + 1) + "." + properties1[k]);
+            }
         }
     }
 }

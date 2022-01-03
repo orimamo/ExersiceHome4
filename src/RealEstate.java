@@ -30,30 +30,6 @@ public class RealEstate {
                 ", addresses=" + Arrays.toString(addresses1) +
                 '}';
     }
-    public void firstMenu(){
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("hello \n1.create user \n2.login \n3.exit");
-        System.out.print("enter your choice:");
-        int choice=scanner.nextInt();
-        if (choice==1){
-            createUser();
-            firstMenu();
-        }
-        else if (choice==2){
-            User user=login();
-            if ( user != null){
-                secondMenu(user);
-            }
-            else {
-                firstMenu();
-            }
-
-        }
-        else {
-            System.out.println("goodbye");
-        }
-
-    }
     public void secondMenu(User user){
         Scanner scanner = new Scanner(System.in);
         System.out.println("1.post new property \n2.remove exist property \n3.show all properties \n4.show my properties \n5.search property \n6.logout and back first menu");
@@ -64,24 +40,31 @@ public class RealEstate {
                 boolean result=postNewProperty(user);
                 System.out.println(result);
                 secondMenu(user);
+                break;
             }
             case 2:{
                 removeProperty(user);
                 secondMenu(user);
+                break;
             }
             case 3: {
                 printAllProperties();
                 secondMenu(user);
+                break;
             }
             case 4: {
                 printAllProperties(user);
                 secondMenu(user);
+                break;
             }
             case 5:{
-
+                Property [] property = search();
+                secondMenu(user);
+                break;
             }
             case 6:{
-                firstMenu();
+                Main.firstMenu();
+                break;
             }
         }
 
@@ -118,7 +101,7 @@ public class RealEstate {
         }
         return passwordCorrect;
     }
-    public void addUserToArray (String username, String password, String phone, String type) {
+    public void addUserToArray (String username, String password, String phone, boolean type) {
         User[] newArray = new User[this.userArray.length + 1];
         for (int i = 0; i < this.userArray.length; i++) {
             newArray[i] = this.userArray[i];
@@ -174,9 +157,8 @@ public class RealEstate {
         String username = null;
         String password = null;
         String phone = null;
-        String type=null;
-        String s1="regular_user";
-        String s2="real_estate_broker";
+        int type;
+        boolean regular=false;
         do {
             System.out.println("Enter username: ");
             username = scanner.next();
@@ -193,10 +175,13 @@ public class RealEstate {
         } while (!isPhoneNumberGood(phone));
 
         do {
-            System.out.println("Enter your type(regular_user,real_estate_broker): ");
-            type = scanner.next();
-        } while (!type.equals(s1)  && !type.equals(s2));
-        addUserToArray(username, password ,phone , type);
+            System.out.println("Enter your type(1.regular_user,2.real_estate_broker): ");
+            type = scanner.nextInt();
+        } while (type!=(1)  && type!=(2));
+        if (type==1){
+            regular=true;
+        }
+        addUserToArray(username, password ,phone , regular);
     }
     public User login(){
         Scanner scanner = new Scanner(System.in);
@@ -223,7 +208,7 @@ public class RealEstate {
     public boolean postNewProperty(User user){
         boolean postProperty=false;
         int amount=amountOfProperty(user);
-        if (user.getType().equals("regular_user")){
+        if (user.getRegular()){
             if (amount<3){
                 postProperty=createProperty(user);
             }
@@ -231,7 +216,7 @@ public class RealEstate {
                 postProperty=false;
             }
         }
-        else if(user.getType().equals("real_estate_broker"))
+        else
         {
             if (amount<10) {
                 postProperty = createProperty(user);
@@ -431,7 +416,7 @@ public class RealEstate {
                 Property[] newPropertiesArray=new Property[this.properties.length-1];
                 this.properties[indexOfProperty] = this.properties[this.properties.length - 1];
                 this.properties[this.properties.length - 1] = null;
-                for (int i = 0; i < this.properties.length; i++) {
+                for (int i = 0; i < this.properties.length-1; i++) {
                     newPropertiesArray[i] = this.properties[i];
                 }
                 this.properties = newPropertiesArray;
@@ -476,6 +461,143 @@ public class RealEstate {
             }
         }
     }
+    public final int MIN_PRICE = 3;
+    public final int MAX_PRICE =4;
+    public  Property[] search(){
+        Property[] suitableProperties = new Property[properties.length];
+        for (int i = 0; i < suitableProperties.length; i++) {
+            suitableProperties[i] = properties[i];
+        }
+        int[] filterSearch = {rentOrSale(), propertyType(),roomNumber(),0,0};
+        int[] priceRange = priceRanger();
+        filterSearch[MIN_PRICE] = priceRange[0];
+        filterSearch[MAX_PRICE]=priceRange[1];
+        for (int i = 0; i < filterSearch.length; i++) {
+            suitableProperties= afterFilter(suitableProperties,filterSearch[i],i);
+        }
+        return suitableProperties;
+    }
+
+    public final int RENT_OR_SALE =0;
+    public final int PROPERTY_TYPE =1;
+    public final int ROOM_NUMBER =2;
+    public Property[] afterFilter(Property[] propertyToFilter,int value , int index){
+        Property[] afterFilter = new Property[propertyToFilter.length];
+        int indexArr = 0;
+        if (value != NO_MATTER) {
+            for (int i = 0; i < propertyToFilter.length; i++) {
+                if (index == RENT_OR_SALE) {
+                    if (value == FOR_RENT) {
+                        if (propertyToFilter[i].getState().equals("rent")){
+                            afterFilter[indexArr]=propertyToFilter[i];
+                            indexArr++;
+                        }
+                    } else {
+                        if (propertyToFilter[i].getState().equals("sale")){
+                            afterFilter[indexArr]=propertyToFilter[i];
+                            indexArr++;
+                        }
+                    }
+                }
+                if (index == PROPERTY_TYPE) {
+                    if (value==NORMAL_APARTMENT){
+                        if (propertyToFilter[i].getType().equals("regular apartment")){
+                            afterFilter[indexArr]=propertyToFilter[i];
+                            indexArr++;
+                        }
+                    }else if (value==PENTHOUSE){
+                        if (propertyToFilter[i].getType().equals("penthouse")){
+                            afterFilter[indexArr]=propertyToFilter[i];
+                            indexArr++;
+                        }
+                    }else {
+                        if (propertyToFilter[i].getType().equals("private house")){
+                            afterFilter[indexArr]=propertyToFilter[i];
+                            indexArr++;
+                        }
+                    }
+                }
+                if (index == ROOM_NUMBER) {
+                    if (propertyToFilter[i].getRooms()==value){
+                        afterFilter[indexArr]=propertyToFilter[i];
+                        indexArr++;
+                    }
+                }
+                if (index==MIN_PRICE){
+                    if (propertyToFilter[i].getPrice()>value){
+                        afterFilter[indexArr]=propertyToFilter[i];
+                        indexArr++;
+                    }
+                }
+                if (index==MAX_PRICE){
+                    if (propertyToFilter[i].getPrice()<value){
+                        afterFilter[indexArr]=propertyToFilter[i];
+                        indexArr++;
+                    }
+                }
+            }
+            afterFilter = withoutNull(afterFilter,indexArr);
+            return afterFilter;
+        }else {
+            return propertyToFilter;
+        }
+    }
+    public Property[] withoutNull(Property[] afterFilter , int arrySize){
+        Property[] withoutNull = new Property[arrySize];
+        for (int i = 0; i < arrySize; i++) {
+            withoutNull[i]=afterFilter[i];
+        }
+        return withoutNull;
+    }
+    public final int NO_MATTER = -999;
+    public final int FOR_RENT = 1;
+    public final int FOR_SALE = 2;
+    public int rentOrSale(){
+        int rentOrSale;
+        Scanner scanner = new Scanner(System.in);
+        do {
+            System.out.println("Is the property for rent or for sale?\n" +
+                    "Press "+FOR_RENT+" for rent\n" +
+                    "Press "+FOR_SALE+" for sale");
+            rentOrSale = scanner.nextInt();
+        }while (rentOrSale!=FOR_RENT && rentOrSale!=FOR_SALE && rentOrSale!=NO_MATTER);
+        return rentOrSale;
+    }
+    public final int NORMAL_APARTMENT= 1;
+    public final int PENTHOUSE = 2;
+    public final int PRIVATE_HOUSE = 3;
+    public int propertyType(){
+        int propertyType;
+        Scanner scanner = new Scanner(System.in);
+        do {
+            System.out.println("Is the property for rent or for sale?\n" +
+                    "Press "+NORMAL_APARTMENT+" for normal apartment\n" +
+                    "Press "+PENTHOUSE+" for penthouse\n" +
+                    "Press "+PRIVATE_HOUSE+" for private house");
+            propertyType = scanner.nextInt();
+        }while (propertyType!=NORMAL_APARTMENT&&propertyType!=PENTHOUSE&&propertyType!=PRIVATE_HOUSE&&propertyType!=NO_MATTER);
+        return propertyType;
+    }
+    public int roomNumber(){
+        int roomNumber;
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("How many rooms?");
+        roomNumber = scanner.nextInt();
+        return roomNumber;
+    }
+    public int[] priceRanger(){
+        int minNum;
+        int maxNum;
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("What is the price range?\n" +
+                "Enter your min price range.");
+        minNum = scanner.nextInt();
+        System.out.println("Enter your max range price");
+        maxNum = scanner.nextInt();
+        int[] priceRanger = {minNum,maxNum};
+        return priceRanger;
+    }
+
 }
 
 

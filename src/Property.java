@@ -1,12 +1,12 @@
 public class Property {
-        private Address address;
-        private double rooms;
-        private int price;
-        private String type;
-        private String state;
-        private int numberOfHouse;
-        private int floor;
-        private User user;
+    private Address address;
+    private double rooms;
+    private int price;
+    private String type;
+    private String state;
+    private int numberOfHouse;
+    private int floor;
+    private User user;
 
 
 

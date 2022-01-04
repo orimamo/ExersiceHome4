@@ -6,6 +6,7 @@ public class RealEstate {
     private Property[] properties;
     private Address[] addresses1;
 
+
     public RealEstate(){
         userArray=new User[0];
         properties=new Property[0];
@@ -145,12 +146,21 @@ public class RealEstate {
                         break;
                     }
                 }
-                } else {
-                    proper = false;
-                }
+            } else {
+                proper = false;
             }
+        }
         return proper;
     }
+    public final String ENTER_YOUR = "Enter your ";
+    public final String USERNAME = "username: ";
+    public final String PASSWORD = "password: ";
+    public final String PHONE_NUM = "phone number: ";
+    public final String TYPE = "type(1.regular_user,2.real_estate_broker): ";
+    public final String CITY = "chosen city:";
+    public final String STREET = "chosen street: ";
+
+
     public void createUser()
     {
         Scanner scanner = new Scanner(System.in);
@@ -160,22 +170,22 @@ public class RealEstate {
         int type;
         boolean regular=false;
         do {
-            System.out.println("Enter username: ");
+            System.out.println(ENTER_YOUR+USERNAME);
             username = scanner.next();
         } while (isUsernameExist(username));
 
         do {
-            System.out.println("Enter password: ");
+            System.out.println(ENTER_YOUR+PASSWORD);
             password = scanner.next();
         } while (!isStrongPassword(password));
 
         do {
-            System.out.println("Enter your phone: ");
+            System.out.println(ENTER_YOUR+PHONE_NUM);
             phone = scanner.next();
         } while (!isPhoneNumberGood(phone));
 
         do {
-            System.out.println("Enter your type(1.regular_user,2.real_estate_broker): ");
+            System.out.println(ENTER_YOUR+TYPE);
             type = scanner.nextInt();
         } while (type!=(1)  && type!=(2));
         if (type==1){
@@ -189,9 +199,9 @@ public class RealEstate {
         boolean details = false;
         String username = null;
         String password = null;
-        System.out.println("Enter username: ");
+        System.out.println(ENTER_YOUR+USERNAME);
         username = scanner.next();
-        System.out.println("Enter password: ");
+        System.out.println(ENTER_YOUR+PASSWORD);
         password = scanner.next();
         if (isUsernameExist(username)){
             if (isPasswordCorrect(username,password)){
@@ -224,7 +234,15 @@ public class RealEstate {
         }
         return postProperty;
     }
-
+    public final String REGULAR_APARTMENT="regular apartment";
+    public final String PENTHOUSE="penthouse";
+    public final String PRIVATE_HOUSE ="private house";
+    public final String RENT_SALE ="Is the property for rent or for sale?\n"+
+            " Press 1 for rent\n"  +
+            "Press 2 for sale";
+    public final String TYPE_OF_PROPERTY = "Enter the type of the property\n"+
+            "Press 1 for "+REGULAR_APARTMENT+"\n"+ "Press 2 for "+PENTHOUSE+"\n"+"Press 3 for "+PRIVATE_HOUSE;
+    public final String ROOM="How much rooms?";
     public boolean createProperty(User user) {
         Scanner scanner = new Scanner(System.in);
         boolean postProperty=false;
@@ -237,27 +255,27 @@ public class RealEstate {
         int price=0;
         String state="";
         showOptionalCities();
-        System.out.println("\nenter the chosen city:");
+        System.out.println("\n"+ENTER_YOUR+CITY);
         String city = scanner.next();
         if (isExistCity(city)) {
             postProperty = true;
             int num = numOfStreets(city);
             showStreets(city);
-            System.out.println("\nenter the chosen street:");
+            System.out.println("\n"+ENTER_YOUR+STREET);
             street = scanner.next();
             if (isExistStreet(street, city)) {
                 postProperty = true;
-                System.out.println("\nenter the type of the property (1)regular apartment \n2)penthouse \n3)private house");
+                System.out.println(TYPE_OF_PROPERTY);
                 type = scanner.nextInt();
                 if (type == 1) {
                     System.out.println("in which floor that apartment is?");
                     floor = scanner.nextInt();
                 }
-                System.out.println("how much rooms?");
+                System.out.println(ROOM);
                 rooms = scanner.nextDouble();
                 System.out.println("what the number of the property?");
                 numOfHouse = scanner.nextInt();
-                System.out.println("what the state of the property?(rent or sell");
+                System.out.println(RENT_SALE);
                 state = scanner.next();
                 System.out.println("what the price of the property?");
                 price = scanner.nextInt();
@@ -273,13 +291,13 @@ public class RealEstate {
         Address address=new Address(city,street);
         if (postProperty){
             if (type==1){
-                type1="regular apartment";
+                type1=REGULAR_APARTMENT;
             }
             else if(type==2){
-                type1="penthouse";
+                type1=PENTHOUSE;
             }
             else if (type==3){
-                type1="private house";
+                type1=PRIVATE_HOUSE;
             }
             Property property=new Property(address,type1,floor,rooms,numOfHouse,state,price,user);
             addPropertyToArray(property);
@@ -350,7 +368,7 @@ public class RealEstate {
         }
     }
     public int numOfStreets(String city){
-       int counter=0;
+        int counter=0;
         for (int i = 0; i<this.addresses1.length; i++){
             if (this.addresses1[i].getCity().equals(city)){
                 counter++;
@@ -441,14 +459,14 @@ public class RealEstate {
         return properties1;
     }
     public void printAllProperties(){
-            if (this.properties.length>=1) {
-                for (int i = 0; i < this.properties.length; i++) {
-                    System.out.println((i + 1) + "." + this.properties[i]);
-                }
+        if (this.properties.length>=1) {
+            for (int i = 0; i < this.properties.length; i++) {
+                System.out.println((i + 1) + "." + this.properties[i]);
             }
-            else {
-                System.out.println("there isn't properties that post");
-            }
+        }
+        else {
+            System.out.println("there isn't properties that post");
+        }
     }
     public void printAllProperties(User user){
         Property[] properties1=allMyProperties(user);
@@ -478,7 +496,7 @@ public class RealEstate {
         return suitableProperties;
     }
 
-    public final int RENT_OR_SALE =0;
+    public final int RENT_OR_SALE = 0;
     public final int PROPERTY_TYPE =1;
     public final int ROOM_NUMBER =2;
     public Property[] afterFilter(Property[] propertyToFilter,int value , int index){
@@ -501,17 +519,17 @@ public class RealEstate {
                 }
                 if (index == PROPERTY_TYPE) {
                     if (value==NORMAL_APARTMENT){
-                        if (propertyToFilter[i].getType().equals("regular apartment")){
+                        if (propertyToFilter[i].getType().equals(REGULAR_APARTMENT)){
                             afterFilter[indexArr]=propertyToFilter[i];
                             indexArr++;
                         }
-                    }else if (value==PENTHOUSE){
-                        if (propertyToFilter[i].getType().equals("penthouse")){
+                    }else if (value==NUM_PENTHOUSE){
+                        if (propertyToFilter[i].getType().equals(PENTHOUSE)){
                             afterFilter[indexArr]=propertyToFilter[i];
                             indexArr++;
                         }
                     }else {
-                        if (propertyToFilter[i].getType().equals("private house")){
+                        if (propertyToFilter[i].getType().equals(PRIVATE_HOUSE)){
                             afterFilter[indexArr]=propertyToFilter[i];
                             indexArr++;
                         }
@@ -549,6 +567,7 @@ public class RealEstate {
         }
         return withoutNull;
     }
+    public final String DONT_MATTER ="Press -999 if it's doesn't matter";
     public final int NO_MATTER = -999;
     public final int FOR_RENT = 1;
     public final int FOR_SALE = 2;
@@ -556,32 +575,27 @@ public class RealEstate {
         int rentOrSale;
         Scanner scanner = new Scanner(System.in);
         do {
-            System.out.println("Is the property for rent or for sale?\n" +
-                    "Press "+FOR_RENT+" for rent\n" +
-                    "Press "+FOR_SALE+" for sale");
+            System.out.println(RENT_SALE+DONT_MATTER);
             rentOrSale = scanner.nextInt();
         }while (rentOrSale!=FOR_RENT && rentOrSale!=FOR_SALE && rentOrSale!=NO_MATTER);
         return rentOrSale;
     }
     public final int NORMAL_APARTMENT= 1;
-    public final int PENTHOUSE = 2;
-    public final int PRIVATE_HOUSE = 3;
+    public final int NUM_PENTHOUSE = 2;
+    public final int NUM_PRIVATE_HOUSE = 3;
     public int propertyType(){
         int propertyType;
         Scanner scanner = new Scanner(System.in);
         do {
-            System.out.println("Is the property for rent or for sale?\n" +
-                    "Press "+NORMAL_APARTMENT+" for normal apartment\n" +
-                    "Press "+PENTHOUSE+" for penthouse\n" +
-                    "Press "+PRIVATE_HOUSE+" for private house");
+            System.out.println(TYPE_OF_PROPERTY);
             propertyType = scanner.nextInt();
-        }while (propertyType!=NORMAL_APARTMENT&&propertyType!=PENTHOUSE&&propertyType!=PRIVATE_HOUSE&&propertyType!=NO_MATTER);
+        }while (propertyType!=NORMAL_APARTMENT&&propertyType!=NUM_PENTHOUSE&&propertyType!=NUM_PRIVATE_HOUSE&&propertyType!=NO_MATTER);
         return propertyType;
     }
     public int roomNumber(){
         int roomNumber;
         Scanner scanner = new Scanner(System.in);
-        System.out.println("How many rooms?");
+        System.out.println(ROOM);
         roomNumber = scanner.nextInt();
         return roomNumber;
     }
@@ -599,8 +613,3 @@ public class RealEstate {
     }
 
 }
-
-
-
-
-

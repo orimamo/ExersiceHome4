@@ -5,7 +5,7 @@ public class User {
     private boolean regular;
 
     public String toString() {
-            return username + " " + phone + "(" + type(regular) + ")";
+        return username + " " + phone + "(" + type(regular) + ")";
 
     }
     public String type (boolean regular){
